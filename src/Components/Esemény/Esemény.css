@@ -1,0 +1,47 @@
+.event{
+    background-color: rgba(42, 200, 139, 0.8);
+    left: 0;
+    position: relative;
+    z-index: auto;
+}
+.break{
+    background-color: rgba(255, 255, 0, 0.479);
+    z-index: 1;
+    position: absolute;
+    display: flex;
+    left: 0px;
+    width: 100%;
+    align-items: center;
+    justify-content: flex-end;
+    box-shadow: -5px 10px 10px rgba(0, 0, 0, 0.301);
+}
+.break > p{
+    padding-right: 10px;
+}
+.eventInProgress{
+    top: 0;
+    left: 0;
+    position: absolute;
+    width: 100%;
+}
+.eventName{
+    padding: 10px;
+    z-index: 100;
+    position: relative;
+}
+.deleteButton{
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 5px;
+    z-index: 10;
+    cursor: pointer;
+}
+.overTime{
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: rgba(255, 0, 0, 0.6);
+    z-index: 100
+}

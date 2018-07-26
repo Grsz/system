@@ -1,0 +1,58 @@
+.calendar{
+    display: flex;
+    position: relative;
+}
+.displaySwitchButton{
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.timesContainer{
+    display: flex;
+    flex-direction: column;
+}
+.timeWrapper{
+    text-align: right;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.halfHour{
+    font-size: 60%
+}
+.calLineX, .halfCalLineX{
+    position: absolute;
+    height: 1px;
+    z-index: 1;
+}
+.calLineX{
+    background-color: gainsboro;
+}
+.halfCalLineX{
+    background-color: rgba(220, 220, 220, 0.527);
+}
+.taskEventsPanel{
+    background-color: white;
+    z-index: 3;
+    display: flex;
+    flex-wrap: wrap;
+    position: relative;
+    padding: 5%;
+    flex: 1
+}
+.taskEventsGroup{
+    width: 50%;
+    position: relative;
+    height: 180px;
+    box-sizing: border-box;
+    display: block
+}
+.taskEventsGroup > h1{
+    position: absolute;
+    bottom: 0
+}
+.kész{
+    align-items: center
+}

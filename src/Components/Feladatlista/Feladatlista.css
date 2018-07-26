@@ -1,0 +1,116 @@
+p{
+    display: inline
+}
+
+.createFl{
+    position: fixed;
+    background-color: rgba(255, 255, 255, 0.425);
+    z-index: 1;
+    top:0;
+    left:0
+}
+
+.taskTypes{
+    background-color: gainsboro;
+    padding: 10px;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    flex-basis: 0;
+    position: relative;
+}
+.tlTask{
+    display: flex;
+    cursor: pointer;
+    position: relative;
+    width: 140px;
+    height: 80px;
+    margin: auto;
+    flex-wrap: wrap;
+    overflow: hidden;
+    justify-content: space-around;
+    box-shadow: 0px 10px 10px grey;
+}
+.taskName{
+    font-size: 120%;
+    width: 100%;
+    display: block;
+    flex-basis: 100%;
+    padding: 10px
+
+}
+.initial{
+    margin: 10px auto;
+}
+.bezaro{
+    background-color: orangered;
+    display: inline-block;
+    padding: 4px;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+.tenyleges{
+    background-color: rgba(42, 200, 139, 0.8)
+}
+.folyamatos{
+    background-color: rgb(209, 236, 51);
+
+}
+.hianyos{
+    background-color: rgb(236, 51, 51);
+
+}
+.kategoria{
+    color: white;
+    background-color: rgba(30, 131, 92, 1) !important;
+
+}
+.rank{
+    position: absolute;
+    left: 5px;
+    bottom: -10px;
+    font-size: 400%;
+    color: rgba(255, 255, 255, 0.404)
+}
+.taskWrapper{
+    display: block;
+    flex: 1;
+    background-color: rgba(202, 202, 202, 0.103);
+    position: relative;
+    margin: 5px 5px 0px 5px;
+}
+.tlButton{
+    flex: 1;
+    text-align: center;
+    border: .5px solid white;
+    background-color: rgba(255, 255, 255, 0.603);
+    font-size: 80%;
+    color: rgba(30, 131, 92, 1)
+}
+.tlButtonsWrapper{
+    align-self: flex-end;
+    display: flex;
+    z-index: 1;
+    flex-basis: 100%;
+    order: 10;
+
+}
+.tlTime {
+    display: flex;
+    flex-direction: row;
+}
+.input{
+    background-color: rgba(255, 255, 255, 0.363);
+    border: none;
+    height: auto;
+}
+.newTaskName{
+    width: 140px
+}
+
+

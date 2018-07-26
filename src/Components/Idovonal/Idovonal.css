@@ -1,0 +1,139 @@
+.timeline{
+    overflow: hidden;
+}
+.tlHeader {
+    box-shadow: -10px 0px 30px rgba(128, 128, 128, 0.555);
+}
+.saroktakaro{
+    grid-column: 1 / start;
+    grid-row: 1 / 2;
+    background-color: white;
+    z-index: 2;
+    display: flex;
+    flex-direction: row;
+}
+.switchDateType{
+    width: 100%;
+    text-align: center;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+p{
+    margin: 0;
+    padding: 0;
+    display: block;
+}
+.dateBlock p{
+    text-align: center;
+    font-size: 120%;
+    color: rgb(3, 179, 111);
+    overflow: hidden;
+}
+.dateBlock{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    position: relative;
+}
+
+.tlLineY {
+    position: absolute;
+    width: 1px;
+    height: 3000px;
+    left: 0px;
+    top: 0px;
+    background-color:gainsboro;
+    z-index: 2;
+}
+
+.tlLineX{
+    position: absolute;
+    width: 3000px;
+    height: 1px;
+    left: 0px;
+    bottom: 0px;
+    background-color: gainsboro;
+    z-index: 2;
+}
+
+.date{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+}
+.date > p{
+    padding: 0 5px;
+    font-weight: 400
+}
+.year, .month{
+    border-bottom: 1px solid;
+    border-left: 1px solid;
+    border-color: gainsboro;
+}
+
+.row{
+    background-color: rgba(169, 169, 169, 0.11);
+    position: relative;
+}
+.directTask{
+    margin: 10px 0;
+    position: relative;
+    background-color: rgba(0, 139, 139, 0.055);
+    display: grid;
+    grid-row: 1 / 2;
+}
+.task{
+    margin: 5px 1px;
+    z-index: 3;
+    position: relative;
+    box-shadow: 10px 10px 30px grey;
+    display: grid;
+    overflow: hidden;
+    grid-template-rows: 1fr
+
+}
+.tlTaskName {
+    position: absolute;
+    font-size: 110%;
+    left: 10px;
+    top: 10px;
+}
+.progressInTime{
+    grid-row: 1;
+    background-color: rgba(3, 179, 111, 0.63)
+}
+.progressOverTime{
+    grid-row: 1;
+    background-color: rgba(255, 0, 0, 0.815)
+}
+.catCont{
+    margin-right: 10px;
+    padding: 0 10px;
+    box-shadow: 0px 0px 30px rgba(128, 128, 128, 0.555);
+    background-color: white;
+    display: flex
+}
+
+.category {
+    background-color: rgba(30, 131, 92, 0.76);
+    display: flex;
+    justify-content: center;
+    position: relative;
+    margin: 10px 5px;
+    box-shadow: 0px 0px 20px rgba(128, 128, 128, 0.555);
+}
+.category > p {
+    font-size: 130%;
+    text-align: center;
+    align-self: center;
+    transform-origin: center center;
+    transform: rotate(-90deg);
+    color: white
+}
