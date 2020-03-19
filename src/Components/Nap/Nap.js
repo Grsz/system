@@ -5,12 +5,14 @@ import {connect} from 'react-redux';
 import Break from '../Break/Break'
 import { newEvent } from '../../Firebase';
 import './Nap.css'
-import { faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 const initial = {
     top: 0,
     bot: 0,
     display: 'none',
 }
+const red = "red";
+const green = "rgba(42, 200, 139, 0.8)";
+
 class Nap extends React.Component{
     constructor(props){
         super(props);
@@ -18,6 +20,7 @@ class Nap extends React.Component{
             top: 0,
             bot: 0,
             newEventName: '',
+            color: green,
             initial: Object.assign({}, initial),
         };
     }
@@ -26,20 +29,18 @@ class Nap extends React.Component{
     preventDragging = false;
     timeout;
     pxToTime = (px) => {
-        return (Math.round(px / this.props.timeUnit) * 3) + this.props.dayStart;
+        return Math.round(px / this.props.timeUnit * 3) + this.props.dayStart;
+    }
+    checkOverlap = (end) => {
+        const conditions = (e) => 
+            ((e.rTop || e.top) > end && (e.rBot || e.bot) > end) ||
+            ((e.rTop || e.top) < end && (e.rBot || e.bot) < end)
+        return this.props.events.every(e => conditions(e)) && 
+        (this.props.breaks.length ? this.props.breaks.every(b => conditions(b)) : true)
     }
     onDown = e => {
         const top = Math.round((e.pageY - this.props.offsetY) / this.props.timeUnit) * this.props.timeUnit;
-
-        const checkOverlap = () => {
-            const conditions = (e) => 
-                ((e.rTop || e.top) > top && (e.rBot || e.bot) > top) ||
-                ((e.rTop || e.top) < top && (e.rBot || e.bot) < top)
-            return this.props.events.every(e => conditions(e)) && 
-            (this.props.breaks.length ? this.props.breaks.every(b => conditions(b)) : true)
-        }
-        console.log(checkOverlap(), top, this.props.events)
-        if(!this.preventDragging && checkOverlap()){
+        if(!this.preventDragging && this.checkOverlap(top)){
             this.timeout = setTimeout(() => {
                 if(!this.preventDragging){
                     this.isDragging = true;
@@ -49,15 +50,20 @@ class Nap extends React.Component{
         }
     }
     onMove = e => {
-        if(!this.isDragging){return}
         const bot = e.pageY - this.props.offsetY < this.state.top ? 0 : e.pageY - this.props.offsetY;
+        if(!this.isDragging){return}
+        if(this.checkOverlap(bot)){
+            this.setState({color: green})
+        } else {
+            this.setState({color: red})
+        }
         this.setState({
             bot
         })
     }
     onUp = e => {
         clearTimeout(this.timeout)
-        if(!this.preventDragging && this.isDragging){
+        if((!this.preventDragging && this.isDragging) && this.checkOverlap(this.state.bot)){
             this.setState({
                 ...this.state,
                 top: 0,
@@ -72,6 +78,12 @@ class Nap extends React.Component{
             })
             this.isDragging = false;
             this.preventDragging = true;
+        } else {
+            this.setState({
+                ...initial
+            })
+            this.isDragging = false;
+
         }
     }
     createNewEvent = () => {
@@ -112,9 +124,9 @@ class Nap extends React.Component{
     outerEvent = () => {
         this.preventDragging = !this.preventDragging
     }
-    events = () => {
-        if(!this.props.events){return}
-        return this.props.events.map(event => {
+    events = (array) => {
+        if(!array){return}
+        return array.map(event => {
             return <Esemény
                 id={event.id}
                 name={event.name}
@@ -122,7 +134,7 @@ class Nap extends React.Component{
 
                 top={event.top}
                 bot={event.bot}
-                height={event.bot - event.top}
+                height={event.height || event.bot - event.top}
 
                 rTop={event.rTop}
                 rBot={event.rBot}
@@ -155,6 +167,7 @@ class Nap extends React.Component{
     initialBreak = () => {
         const top = this.props.lastEventBot,
             bot = this.props.time;
+            console.log(top, bot)
         if(bot - top > this.props.timeUnit / 3){
             return <Break
                 name='Szünet'
@@ -188,7 +201,8 @@ class Nap extends React.Component{
                     <div style={{
                             top: this.state.top,
                             height: this.state.bot - this.state.top,
-                            display: this.isDragging ? 'block' : 'none'
+                            display: this.isDragging ? 'block' : 'none',
+                            backgroundColor: this.state.color
                         }}
                         className='event készítésnél'
                     ></div>
@@ -214,7 +228,8 @@ class Nap extends React.Component{
                             <div className='eventButton' onClick={this.cancelCreateNewEvent}>Mégse</div>
                         </div>
                     </div>
-                    {this.events()}
+                    {this.events(this.props.events)}
+                    {this.events(this.props.contiEvents)}
                     {this.breaks()}
                     {(this.props.today && this.props.lastEventBot) && 
                         this.initialBreak()}

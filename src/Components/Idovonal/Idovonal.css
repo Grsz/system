@@ -121,7 +121,7 @@ p{
     display: flex
 }
 
-.category {
+.tlCategory {
     background-color: rgba(30, 131, 92, 0.76);
     display: flex;
     justify-content: center;
@@ -129,7 +129,7 @@ p{
     margin: 10px 5px;
     box-shadow: 0px 0px 20px rgba(128, 128, 128, 0.555);
 }
-.category > p {
+.tlCategory > p {
     font-size: 130%;
     text-align: center;
     align-self: center;

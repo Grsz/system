@@ -37,7 +37,7 @@ class Idovonal extends React.Component{
             columns: 0,
             width: 0,
             height: 0,
-            display: "hónap",
+            display: "months",
             taskDims: {},
             dragX: null,
             gridUnit: 0
@@ -45,12 +45,9 @@ class Idovonal extends React.Component{
     }
     isDragging = false;
     componentDidMount(){
-        this.state.tasks["hónap"].forEach(task => {
-            console.log(task.name)
+        this.state.tasks["months"].forEach(task => {
             Object.keys(this).forEach(key => {
-                console.log(task.id, key)
                 if(key === task.id){
-                    console.log("talált")
                     this.setState( prevState => {
                         const taskDims = {...prevState.taskDims};
                         taskDims[task.id] = true;
@@ -73,10 +70,10 @@ class Idovonal extends React.Component{
         //az rootParent az a külön switches csoportfát alkotó legfelső task, azaz a kategóriák közvetlen gyermeke
         columns = 0,
         rows = 0,
-        displays = ["hónap", "hét", "nap"];
+        displays = ["months", "weeks", "days"];
         displays.forEach(display => {
             let tasks = nextProps.tasks
-            .filter(elem => elem.timeType === display && elem.type !== "kategoria")
+            .filter(elem => elem.timeType === display && elem.type !== "category")
             .map(task => {
                 const child = [];
                 nextProps.tasks.forEach(element => {
@@ -86,10 +83,10 @@ class Idovonal extends React.Component{
                 })
                 const length = () => {
                     const time = Number(task.timeValue);
-                    if(display === "hónap"){
+                    if(display === "months"){
                         return time * 30
                     }
-                    else if(display === "hét"){
+                    else if(display === "weeks"){
                         return time * 7
                     }
                     else{
@@ -112,7 +109,7 @@ class Idovonal extends React.Component{
             let directTasks = [];
             //ez a rész arra szolgál, hogy beállítsuk a feladatoknak az lnkflt
             do{tasks
-                .filter(task => task.type !== "folyamatos" && task.type !== "kategoria")
+                .filter(task => task.type !== "continuous" && task.type !== "category")
                 .forEach(task => {
                     let gotParent = false
                     tasks.forEach(parent => {
@@ -164,7 +161,6 @@ class Idovonal extends React.Component{
                             directTasks.push(task)
                         }
                     }
-                    console.log("rootParent set")
             })} while (!tasks.every(task => task.rootParent))
             //ez arra szolgál, hogy a feladatoknak beállítsuk a szintjét, és a legnagyobbszülőidjét
             do{tasks.forEach(elem => {
@@ -182,7 +178,6 @@ class Idovonal extends React.Component{
                         }
                     })
                 })
-                console.log("level, biggestParent set")
             })} while (tasks.some(elem => elem.level === 0))
             //itt a tasks rangsorolását állítjuk be a rangjuk, és a szülőgyerek kapcsolat alapján
             tasks = tasks.map(({child, ...p}) => ({
@@ -254,13 +249,12 @@ class Idovonal extends React.Component{
                         })
                     }
                 })
-                console.log("colstart set")              
             })} while(!Object.keys(taskCont).every(group => taskCont[group].every(task => (task.colStart || task.colStart === 0))))
 
 
 
             let categories = nextProps.tasks
-            .filter(elem => elem.type === 'kategoria')
+            .filter(elem => elem.type === 'category')
             .map(category => {
                 const child = [];
                 nextProps.tasks.forEach(element => {
@@ -316,7 +310,6 @@ class Idovonal extends React.Component{
                     })
                 }
             })
-            console.log("cat level set")
             } while (categories.some(elem => elem.level === 0) && categories.some(elem => elem.added === false))
 
             categories = categories.map(({child, ...p}) => ({
@@ -373,7 +366,6 @@ class Idovonal extends React.Component{
                         })
                     })
                 })
-                console.log("cat rowstart set")
             } while (!categories.every(elem => elem.rowStart) || !Object.keys(directTaskCont).every(group => directTaskCont[group].every(directTasks => directTasks.rowStart)))
 
 
@@ -404,9 +396,8 @@ class Idovonal extends React.Component{
 
     }
     categories = () => {
-        console.log(daysInThisMonth, this.state.daysInThisMonth)
         const categoryElements = this.state.categories.map(category => {
-            return <div className = 'category' style={{
+            return <div className = 'tlCategory' style={{
                 gridRow: `${category.rowStart - 1} / span ${category.length}`,
                 gridColumn: category.level + "/ span 1",
             }}> 
@@ -429,10 +420,10 @@ class Idovonal extends React.Component{
         const {display, directTasks, tasks, rootParent} = this.state;
         //dátumkezdet alapján az összes task nézettől függően bekerül a gridbe, csak a date alapján amiknek nem kell látszania, azok 0
         const filterTasksByDisplay = () => {
-            if(display === "hónap"){
+            if(display === "months"){
                 return "repeat(180, 1fr)"
             }
-            else if(display === "hét"){
+            else if(display === "weeks"){
                 if(this.state.tlFirstDayOfYearOfMonth < 0){
                     return `repeat(${this.state.tlLastDayOfYearOfMonth}, 1fr) repeat(${180 - this.state.tlLastDayOfYearOfMonth}, 0)`
                 }
@@ -440,7 +431,7 @@ class Idovonal extends React.Component{
                     return `repeat(${this.state.tlFirstDayOfYearOfMonth}, 0) repeat(${this.state.daysInThisMonth}, 1fr) repeat(${180 - this.state.tlLastDayOfYearOfMonth}, 0)`
                 }
             }
-            else if(display === "nap"){
+            else if(display === "days"){
                 return `repeat(${this.state.tlDaysOfYearOfWeek[0]}, 0) repeat(7, 1fr) repeat(${180 - this.state.tlDaysOfYearOfWeek[6] + 1}, 0)`
             }
         }
@@ -480,7 +471,8 @@ class Idovonal extends React.Component{
                                     </div>
 
                                     <div className='progressOverTime' style ={{
-                                        gridColumn: `${e.length} / span ${e.rLength - e.length}`
+                                        //gridColumn: `${e.length} / span ${e.rLength - e.length}`
+                                        gridColumn: `span ${e.rLength - e.length} / -1`
                                     }}></div>
 
                                 </React.Fragment>
@@ -506,7 +498,8 @@ class Idovonal extends React.Component{
                                 </div>
 
                                 <div className='progressOverTime' style ={{
-                                    gridColumn: `${e.length} / span ${currentLength - e.length}`
+                                    //gridColumn: `${e.length} / span ${currentLength - e.length}`
+                                    gridColumn: `span ${currentLength - e.length} / -1`
                                 }}></div>
                                 
                             </React.Fragment>
@@ -539,14 +532,13 @@ class Idovonal extends React.Component{
                             </div>
                         })
                     }
-                    const check = (task, display) => !task.rColStart && display === 'hónap';
+                    const check = (task, display) => !task.rColStart && display === 'months';
                     
                     const onDown = (e, task) => {
                         this.isDragging = true;
                         this.setState({
                             gridUnit: length(task) / this.state.taskDims[task.id].width,
                         })
-                        console.log(e.pageX, this.state.taskDims[task.id].left)
                     }
                     return <div 
                         className = 'directTask' 
@@ -556,7 +548,7 @@ class Idovonal extends React.Component{
                             gridTemplateRows: "repeat(" + directTask.rows + ", 1fr)"
                         }}
                         ref={e => this[directTask.id] = e}
-                        onPointerDown={e => onDown(e, directTask)}
+                        //onPointerDown={e => onDown(e, directTask)}
                     >
                         {childTasks()}
                     </div>
@@ -587,33 +579,30 @@ class Idovonal extends React.Component{
                 //return {prevState}
             //})
             const dims = elem ? elem.getBoundingClientRect() : null
-            console.log(dims, task.name)
             if(dims){
                 this.setState({
                     taskDims: dims
                 })
-                console.log(elem.getBoundingClientRect())
             }
         //}
     }
     getMonthDims = (e) => {
-        e && console.log(e.getBoundingClientRect())
     }
     header(){
         const columns = () => {
-            if(this.state.display === "hónap"){
+            if(this.state.display === "months"){
                 return `repeat(180, 1fr)`
             }
-            if(this.state.display === "hét"){
+            if(this.state.display === "weeks"){
                 return `1fr`
             }
-            if(this.state.display === "nap"){
+            if(this.state.display === "days"){
                 return `repeat(7, 1fr)`
             }
         }
         const headerElements = () => {
 
-            if(this.state.display === "hónap"){
+            if(this.state.display === "months"){
                 const halfYear = [];
                 let colCounter = 0;
                 for(let i = this.state.startMonth;;){
@@ -634,7 +623,7 @@ class Idovonal extends React.Component{
                                 ref={e => this.getMonthDims(e)}
                             >
                                 <div className = 'tlLineY'></div>
-                                <p className = 'hónap'>{hónapok[i]}</p>
+                                <p className = 'months'>{hónapok[i]}</p>
                             </div>
                         )
                         i++
@@ -653,7 +642,7 @@ class Idovonal extends React.Component{
                                     ref={e => this.getMonthDims(e)}
                                 >
                                     <div className = 'tlLineY'></div>
-                                    <p className = 'hónap'>{hónapok[i]}</p>
+                                    <p className = 'months'>{hónapok[i]}</p>
                                 </div>
                             )
                             break
@@ -667,7 +656,7 @@ class Idovonal extends React.Component{
                                     ref={e => this.getMonthDims(e)}
                                 >
                                     <div className = 'tlLineY'></div>
-                                    <p className = 'hónap'>{hónapok[i]}</p>
+                                    <p className = 'months'>{hónapok[i]}</p>
                                 </div>
                             )
                             colCounter += 30
@@ -688,7 +677,7 @@ class Idovonal extends React.Component{
             }
 
 
-            else if(this.state.display === "hét"){
+            else if(this.state.display === "weeks"){
                 let colCounter = 0;
                 let daysInThisMonth;
                 let firstDay;
@@ -703,8 +692,6 @@ class Idovonal extends React.Component{
                 const weeksElements = () => {
                     const weeks = [];
                     for(let i = 1;; i++){
-                        console.log(colCounter);
-                        console.log(daysInThisMonth)
                         if(i === 1){
                             if(firstDay === -1){
                                 colCounter++
@@ -714,7 +701,7 @@ class Idovonal extends React.Component{
                                         gridRow: "2 / span 1",
                                     }}>
                                         <div className = 'tlLineY'></div>
-                                        <p>{"1. hét"}</p>
+                                        <p>{"1. weeks"}</p>
                                     </div>
                                 )
                             }
@@ -726,7 +713,7 @@ class Idovonal extends React.Component{
                                         gridRow: "2 / span 1",
                                     }}>
                                         <div className = 'tlLineY'></div>
-                                        <p>{"1. hét"}</p>
+                                        <p>{"1. weeks"}</p>
                                     </div>
                                 )
                             }
@@ -739,7 +726,7 @@ class Idovonal extends React.Component{
                                         gridRow: "2 / span 1",
                                     }}>
                                         <div className = 'tlLineY'></div>
-                                        <p>{i + ". hét"}</p>
+                                        <p>{i + ". weeks"}</p>
                                     </div>
                                 )
                                 break
@@ -751,7 +738,7 @@ class Idovonal extends React.Component{
                                         gridRow: "2 / span 1",
                                     }}>
                                         <div className = 'tlLineY'></div>
-                                        <p>{i + ". hét"}</p>
+                                        <p>{i + ". weeks"}</p>
                                     </div>
                                 )
                                 colCounter += 7
@@ -779,7 +766,7 @@ class Idovonal extends React.Component{
             }
 
 
-            else if(this.state.display === "nap"){
+            else if(this.state.display === "days"){
                 const daysOfWeek = [];
                 for(let i = 0; i < 7; i ++){
                     daysOfWeek.push(
@@ -792,7 +779,7 @@ class Idovonal extends React.Component{
                                 <p>{hónapok[dayOfYearToDate(this.state.daysOfYearOfWeek[i]).getMonth()]}</p>
                                 <p>{dayOfYearToDate(this.state.daysOfYearOfWeek[i]).getDate()}</p>
                             </div>
-                            <p className = 'nap'>{napok[i]}</p>
+                            <p className = 'days'>{napok[i]}</p>
                         </div>
                     )
                 }
@@ -828,7 +815,6 @@ class Idovonal extends React.Component{
     }
 
     render(){
-        console.log(this.state.taskDims)
         return(
             <div className = 'timeline' style={{
                 display: "grid",
@@ -836,14 +822,14 @@ class Idovonal extends React.Component{
                 gridTemplateRows: "100px repeat(" + this.state.rows + ", 150px)",
             }} >
                 <div className = 'saroktakaro'>
-                    <div style={this.active('hónap')} className = 'switchDateType' onClick = {() => this.changeDisplay('hónap')}>
-                        <p>Hónap</p>
+                    <div style={this.active('months')} className = 'switchDateType' onClick = {() => this.changeDisplay('months')}>
+                        <p>months</p>
                     </div>
-                    <div style={this.active('hét')} className = 'switchDateType' onClick = {() => this.changeDisplay('hét')}>
-                        <p>Hét</p>
+                    <div style={this.active('weeks')} className = 'switchDateType' onClick = {() => this.changeDisplay('weeks')}>
+                        <p>weeks</p>
                     </div>
-                    <div style={this.active('nap')} className = 'switchDateType' onClick = {() => this.changeDisplay('nap')}>
-                        <p>Nap</p>
+                    <div style={this.active('days')} className = 'switchDateType' onClick = {() => this.changeDisplay('days')}>
+                        <p>days</p>
                     </div>
                 </div>
                 {this.header()}

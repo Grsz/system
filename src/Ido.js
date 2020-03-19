@@ -1,25 +1,25 @@
 const hónapok = [
     "Jan.",
     "Feb.",
-    "Már.",
-    "Ápr.",
-    "Máj.",
-    "Jún.",
-    "Júl.",
+    "Mar.",
+    "Apr.",
+    "May",
+    "Jun.",
+    "Jul.",
     "Aug.",
-    "Szep.",
-    "Okt.",
+    "Sep.",
+    "Oct.",
     "Nov.",
-    "Dec"
+    "Dec."
 ];
 const napok = [
-    'Hé.',
-    'Ke.',
-    'Sze.',
-    'Csü.',
-    'Pé.',
-    'Szo.',
-    'Va.'
+    'Mon.',
+    'Tue.',
+    'Wed.',
+    'Thu.',
+    'Fri.',
+    'Sat.',
+    'Sun.'
 ];
 const dateToDayOfYear = (dateString) => {
     var now = new Date(dateString);
@@ -46,7 +46,6 @@ const daysOfWeek = () => {
     if(dayOfWeek === 0){
         let count = dayOfYear;
         for(let i = 6; i >= 0; i--){
-            console.log(dayOfYearToDate(count))
             daysOfWeek[i] = count;
             count--;
         }
@@ -63,11 +62,14 @@ const compareDates = (d1, d2) => {
         && d1.getMonth() === d2.getMonth();
 }
 const convertDateToTlDay = (date) => dateToDayOfYear(date) - startDayOfYear;
+const dateToYMD = date => `${date.getFullYear()} ${date.getMonth() + 1} ${date.getDate()}`
+
 let startDate = new Date(2018, 4, 24, 1, 1, 1),
 startDayOfYear = dateToDayOfYear(startDate),
 startMonth = startDate.getMonth(),
 
 today = new Date(),
+todayString = `${today.getFullYear()} ${today.getMonth() + 1} ${today.getDate()}`,
 todayOfWeek = today.getDay() === 0 ? 6 : today.getDay() - 1,
 todayOfYear = dateToDayOfYear(today),
 tlToday = todayOfYear - startDayOfYear,
@@ -85,8 +87,9 @@ tlLastDayOfYearOfMonth = lastDayOfYearOfMonth - startDayOfYear,
 datesOfWeek = daysOfWeek().map(nap => dayOfYearToDate(nap)),
 daysOfYearOfWeek = daysOfWeek(),
 tlDaysOfYearOfWeek = daysOfYearOfWeek.map(nap => nap - startDayOfYear);
-console.log(lastDayOfMonth, today, currentMonth, daysInThisMonth(), )
+
 export {
+    dateToYMD,
     hónapok,
     napok, 
     compareDates,
@@ -99,6 +102,7 @@ export {
     startDayOfYear, 
     startMonth, 
     today,
+    todayString,
     todayOfYear,
     tlToday,
     currentMonth,

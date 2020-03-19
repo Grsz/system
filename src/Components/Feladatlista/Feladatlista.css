@@ -54,10 +54,10 @@ p{
     right: 0;
     top: 0;
 }
-.tenyleges{
+.regular{
     background-color: rgba(42, 200, 139, 0.8)
 }
-.folyamatos{
+.continuous{
     background-color: rgb(209, 236, 51);
 
 }
@@ -65,7 +65,7 @@ p{
     background-color: rgb(236, 51, 51);
 
 }
-.kategoria{
+.category{
     color: white;
     background-color: rgba(30, 131, 92, 1) !important;
 

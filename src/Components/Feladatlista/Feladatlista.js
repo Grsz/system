@@ -179,21 +179,21 @@ class Feladatlista extends React.Component{
         this.setState({initialTimeValue: event.target.value})
     }
     timeTypeEditing = (event) => {
-        if(this.props.type === 'tenyleges'){
+        if(this.props.type === 'regular'){
             if(event.target.value === this.state.possibleTimeTypes[0]){
                 this.setState({maxTimeValue: this.state.parentTimeValue})
             }
             else{
-                if(event.target.value === 'hónap'){
+                if(event.target.value === 'months'){
                     this.setState({maxTimeValue: 6})
                 }
-                else if(event.target.value === 'hét'){
+                else if(event.target.value === 'weeks'){
                     this.setState({maxTimeValue: 4})
                 }
-                else if(event.target.value === 'nap'){
+                else if(event.target.value === 'days'){
                     this.setState({maxTimeValue: 7})
                 }
-                else if(event.target.value === 'óra'){
+                else if(event.target.value === 'hours'){
                     this.setState({maxTimeValue: 12})
                 }
             }
@@ -220,7 +220,7 @@ class Feladatlista extends React.Component{
     }
     turnOnTimeEdit = () => {
         const parent = this.props.tasks.find(parent => this.props.pId === parent.id)
-        if(!this.props.move && (Boolean(parent.timeValue) || parent.type === 'kategoria')){
+        if(!this.props.move && (Boolean(parent.timeValue) || parent.type === 'category')){
             this.props.coverOn();
             this.setState({
                 timeEdit: true,
@@ -228,37 +228,37 @@ class Feladatlista extends React.Component{
                 initialTimeType: 'empty',
                 zindex: 2
             })
-            if(this.props.type === 'folyamatos'){
+            if(this.props.type === 'continuous'){
                 this.setState({possibleTimeTypes: [
-                    'hónap',
-                    'hét',
-                    'nap'
+                    'months',
+                    'weeks',
+                    'days'
                 ]})
             }
-            else if(parent.timeType === 'hónap' || !parent.timeType){
+            else if(parent.timeType === 'months' || !parent.timeType){
                 this.setState({possibleTimeTypes: [
-                    'hónap',
-                    'hét',
-                    'nap',
-                    'óra'
+                    'months',
+                    'weeks',
+                    'days',
+                    'hours'
                 ]})
             }
-            else if(parent.timeType === 'hét'){
+            else if(parent.timeType === 'weeks'){
                 this.setState({possibleTimeTypes: [
-                    'hét',
-                    'nap',
-                    'óra'
+                    'weeks',
+                    'days',
+                    'hours'
                 ]})
             }
-            else if(parent.timeType === 'nap'){
+            else if(parent.timeType === 'days'){
                 this.setState({possibleTimeTypes: [
-                    'nap',
-                    'óra'
+                    'days',
+                    'hours'
                 ]})
             }
-            else if(parent.timeType === 'óra'){
+            else if(parent.timeType === 'hours'){
                 this.setState({possibleTimeTypes: [
-                    'óra'
+                    'hours'
                 ]})
             }
         }
@@ -343,7 +343,7 @@ class Feladatlista extends React.Component{
                                         <div
                                             className='cancel tlButton'
                                             onClick={this.cancelNameEdit}>
-                                            mégse
+                                            cancel
                                         </div>
                                         </div>
                                     </React.Fragment>
@@ -365,7 +365,7 @@ class Feladatlista extends React.Component{
                                             onChange={this.timeValueEditing}
                                             style={{width: '40px'}}
                                         /> 
-                                        {this.props.type === 'folyamatos' && <p>óra /</p>}
+                                        {this.props.type === 'continuous' && <p>hours /</p>}
                                         <select onChange={this.timeTypeEditing}>
                                             <option value='empty'>-</option>
                                             {this.state.possibleTimeTypes.map(type => 
@@ -382,23 +382,23 @@ class Feladatlista extends React.Component{
                                         <div
                                             className='cancel tlButton'
                                             onClick={this.cancelTimeEdit}>
-                                            mégse
+                                            cancel
                                         </div>
                                         </div>
                                     </React.Fragment>
                                 :
-                                this.props.type !== 'kategoria' &&
+                                this.props.type !== 'category' &&
                                     (this.props.timeValue ? 
                                         <div className = 'tlTime' onClick={this.turnOnTimeEdit}>
                                             <p style = {{marginRight: '5px'}}>{this.props.timeValue}</p>
-                                            {this.props.type === 'folyamatos' &&
-                                                <p>óra /</p>
+                                            {this.props.type === 'continuous' &&
+                                                <p>hours /</p>
                                             }
                                             <p>{this.props.timeType}</p>
                                         </div>
                                         :
                                         <div className = 'tlTime' onClick={this.turnOnTimeEdit}>
-                                            <p>Idő beállítása</p>  
+                                            <p>Set time</p>  
                                         </div>                                      
                                     )
                                 }
@@ -429,24 +429,21 @@ class Feladatlista extends React.Component{
 
 
                 <div className='taskTypes' style={{display: this.state.add, zIndex: '1'}} >
-                    <div className='tenyleges tlTask initial' onClick={() => this.newElemType('tenyleges')}>
-                        <p>Tényleges</p>
+                    <div className='regular tlTask initial' onClick={() => this.newElemType('regular')}>
+                        <p>Regular</p>
                     </div>
-                    <div className='folyamatos tlTask initial' onClick={() => this.newElemType('folyamatos')}>
-                        <p>Folyamatos</p>
+                    <div className='continuous tlTask initial' onClick={() => this.newElemType('continuous')}>
+                        <p>Continuous</p>
                     </div>
-                    <div className='hianyos tlTask initial' onClick={() => this.newElemType('hianyos')}>
-                        <p>Hiányos</p>
-                    </div>
-                    <div className='kategoria tlTask initial' onClick={() => this.newElemType('kategoria')}>
-                        <p>Kategória</p>
+                    <div className='category tlTask initial' onClick={() => this.newElemType('category')}>
+                        <p>Category</p>
                     </div>
                     <div 
                         className='tlButton' 
                         onClick={this.close} 
                         style = {{height: '20px'}}
                     >
-                        Mégse
+                        cancel
                     </div>
                 </div>
                 <div style = {{display: this.state.moveDisplay}}>
@@ -462,8 +459,8 @@ class Feladatlista extends React.Component{
                                     <div className={this.state.possibleTask.type + ' tlTask initial'}>
                                         <input className='input newTaskName' type='text' placeholder='Feladat neve' value={this.state.possibleTask.name} onChange={this.newElemName} autoFocus />
                                         <div className='tlButtonsWrapper'>
-                                            <div className='tlButton' onClick={this.completeNewElem}>Ok</div>
-                                            <div className='tlButton' onClick={this.cancelCreateFl}>Mégse</div>
+                                            <div className='tlButton' onClick={this.completeNewElem}>ok</div>
+                                            <div className='tlButton' onClick={this.cancelCreateFl}>cancel</div>
                                         </div>
                                     </div>
                                 </div>

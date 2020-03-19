@@ -5,12 +5,13 @@ import {createStore, applyMiddleware} from 'redux';
 import thunk from 'redux-thunk';
 import fetch from 'cross-fetch';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import {todayOfWeek} from './Ido';
-//a topot és botot az óra 12szorosára növeljük. az időegységet pedig 4szeresére
+import { todayOfWeek } from './Ido';
+//a topot és botot az hours 12szorosára növeljük. az időegységet pedig 4szeresére
 
 const initialState = {
   tasks: [],
-  events: [],
+  events: [[],[],[],[],[],[],[]],
+  contiEvents: [[],[],[],[],[],[],[]],
   breaks: [],
   cover: 'none',
   move: false,
@@ -26,7 +27,7 @@ const initialState = {
     wW: 1500
   },
   userData: {
-    //12es szorzó (5 perc)
+    //12es szorzó (5 perc), és ez a szorzó fix.
     dayStart: 96,
     dayEnd: 288,
   },
@@ -62,12 +63,10 @@ const reducer = (state = initialState, action) => {
         ]
       }
     case 'DELETE_TASK' : 
-    console.log('deleteredux')
       return{
         ...state,
         tasks: state.tasks.map(task => {
           if(task.id === action.id){
-            console.log("megvan")
             return{
               ...task,
               status: 'torolt'
@@ -114,11 +113,45 @@ const reducer = (state = initialState, action) => {
       move: false,
       moveWhich: undefined
     }
+    case 'GET_CONTINUOUS_EVENTS' :
+      //három lehetőség van. vagy van az eventnek rbot és rtop, akkor azzal helyezzük el, ha nincs, és múltbéli nap, akkor pihenőnap, ha jövőbeli, akkor simán alaphelyzet
+      let contiEventsWeek = [];
+      action.days.forEach(day => {
+        let contiEventsDay = [];
+        day.forEach(event => {
+            if(event.type === "dayStarter"){
+              const height = timeToPx(event.height + state.userData.dayStart),
+                top = timeToPx(state.userData.dayStart),
+                bot = timeToPx(state.userData.dayStart) + height,
+                rTop = event.rTop ? timeToPx(event.rTop) : null,
+                rBot = event.rBot ? timeToPx(event.rBot) : null,
+                name = "Day start",
+                rHeight = rTop && rBot ? rBot - rTop : null;
+
+              contiEventsDay.push({
+                ...event,
+                height,
+                name,
+                rTop,
+                rBot,
+                top,
+                bot,
+                rHeight
+              })
+            }
+        })
+        contiEventsDay.sort((a, b) => a.top - b.top);
+        contiEventsWeek.push(contiEventsDay);
+      })
+        return{
+          ...state,
+          contiEvents: contiEventsWeek,
+        }
     case 'GET_TASK_EVENTS' : 
       const taskEvents = {};
 
       state.tasks
-      .filter(taskEvent => taskEvent.timeType === "óra" && !taskEvent.inCal)
+      .filter(taskEvent => taskEvent.timeType === "hours" && !taskEvent.inCal)
       .map(taskEvent => {
           const task = {
               id: taskEvent.id,
@@ -128,11 +161,11 @@ const reducer = (state = initialState, action) => {
           };
           
           let currentTask = taskEvent;
-          if(state.tasks.find(task => task.id === taskEvent.pId).type !== 'kategoria'){
+          if(state.tasks.find(task => task.id === taskEvent.pId).type !== 'category'){
               for(let i = 0;; i++){
                   task.rankings[i] = currentTask.rank;
                   const parent = state.tasks.find(task => task.id === currentTask.pId);
-                  if(parent.type === 'kategoria'){break};
+                  if(parent.type === 'category'){break};
                   currentTask = parent;
               } ;
           } else {task.rankings[0] = currentTask.rank}
@@ -217,8 +250,8 @@ const reducer = (state = initialState, action) => {
         })
       }
     case 'GET_EVENTS' :
-    let eventsWeek = [], breaksWeek = [];
     console.log(action.days)
+    let eventsWeek = [], breaksWeek = [];
     action.days.forEach(day => {
       let eventsDay = [], breaksDay = [];
       day.forEach(event => {
@@ -288,9 +321,10 @@ const reducer = (state = initialState, action) => {
         })
       }
     case 'GET_EVENT_QUERY' :
-      const events = state.events[todayOfWeek];
+      const events = [...state.events[todayOfWeek], ...state.contiEvents[todayOfWeek]].sort((a, b) => a.rTop || a.top - b.rTop || b.top);
       const breaks = state.breaks[todayOfWeek];
       let query = {};
+      console.log(events)
       for(let i = 0; i < breaks.length; i++){
         if(!breaks[i].bot){
           query = {
@@ -309,28 +343,28 @@ const reducer = (state = initialState, action) => {
               name: events[i].name,
               taskId: events[i].taskId || null,
               status: "folyamatban",
-              lastEventBot: undefined
+              lastEventBot: undefined,
+              type: events[i].type
             }
             break
-          } else if(!events[i].rTop && !events[i].rBot){
-            if(i > 0){
-              query = {
-                lastEventBot: events[i - 1].rBot
-              }
-            }
+          }
+        }
+      }
+      if(!Object.keys(query).length){
+        const lastEventBot = Math.max(...events.filter(e => !isNaN(e.rBot)).map(e => e.rBot));
+        console.log(events.filter(e => !isNaN(e.rBot)).map(e => e.rBot), lastEventBot)
+        query = {lastEventBot: Boolean(lastEventBot) ? lastEventBot : 1}
+        for(let i = 0; i < events.length; i++){
+          if(!events[i].rTop && !events[i].rBot){
             query = {
               ...query,
               id: events[i].id,
               name: events[i].name,
               taskId: events[i].taskId || null,
-              status: "várakozik"
+              status: "várakozik",
+              type: events[i].type
             }
             break
-          }
-          if(!Object.keys(query).length){
-            query = {
-              lastEventBot: events[events.length - 1].rBot
-            }
           }
         }
       }
@@ -346,7 +380,7 @@ const reducer = (state = initialState, action) => {
             if(i === todayOfWeek){
               return [
                 ...day, {
-                  name: "Szünet",
+                  name: "Break",
                   top: state.query.lastEventBot,
                   bot: timeToPx(action.rTop)
                 }
@@ -426,7 +460,7 @@ const reducer = (state = initialState, action) => {
 /*if(event.taskId){
   const kezdésNélküliFlek = [];
   let currentTask = tasks.find(task => task.id === event.taskId);
-  while (currentTask.type !== "kategoria" && !currentTask.kezdet){
+  while (currentTask.type !== "category" && !currentTask.kezdet){
     kezdésNélküliFlek.push(currentTask.id);
     currentTask = tasks.find(task => task.id === currentTask.pId);
   };

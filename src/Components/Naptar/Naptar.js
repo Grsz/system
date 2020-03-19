@@ -100,6 +100,7 @@ class Naptar extends React.Component{
                 dayIndex={todayOfWeek}
                 events={this.props.events[todayOfWeek]}
                 breaks={this.props.breaks[todayOfWeek]}
+                contiEvents={this.props.contiEvents[todayOfWeek]}
                 today={true}
             />
         }
@@ -108,6 +109,7 @@ class Naptar extends React.Component{
                 dayIndex={i}
                 events={dayIndex}
                 breaks={this.props.breaks[i]}
+                contiEvents={this.props.contiEvents[i]}
                 />
                 
         })
@@ -143,6 +145,7 @@ const mapStateToProps = (state, ownprops) => ({
     taskEvents: state.taskEvents,
     events: state.events,
     breaks: state.breaks,
+    contiEvents: state.contiEvents,
     calDayH: (state.userData.dayEnd - state.userData.dayStart) * (state.dim.timeUnit / 3),
     calDayW: state.dim.calDayW,
     timeUnit: state.dim.timeUnit,
